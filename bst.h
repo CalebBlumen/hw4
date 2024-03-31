@@ -238,7 +238,8 @@ protected:
     // Mandatory helper functions
     Node<Key, Value>* internalFind(const Key& k) const; // TODO
     Node<Key, Value> *getSmallestNode() const;  // TODO
-    static Node<Key, Value>* predecessor(Node<Key, Value>* current); // TODO
+    static Node<Key, Value>* predecessor(Node<Key, Value>* current);
+    static Node<Key, Value>* successor(Node<Key, Value>* current); // TODO
     // Note:  static means these functions don't have a "this" pointer
     //        and instead just use the input argument.
 
@@ -352,28 +353,9 @@ template<class Key, class Value>
 typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
-    if (current_->getRight() != nullptr) {
-      Node<Key, Value>* right = current_->getRight();
-      while (right->getLeft() != nullptr) {
-        right = right->getLeft();
-      }
-      current_ = right;
-    }
-    else {
-      Node<Key, Value>* parent = current_->getParent();
-      while (parent != NULL && parent->getLeft() != current_) {
-        current_ = parent;
-        parent = current_->getParent();
-      }
-      current_ = parent;
-      if (parent == NULL) current_ = NULL; //current is root
-      
-    }
-    
-    return *this;
-    
-    // TODO
-
+     // TODO
+  current_ = BinarySearchTree<Key,Value>::successor(current_);
+  return *this;
 }
 
 
@@ -404,7 +386,6 @@ BinarySearchTree<Key, Value>::~BinarySearchTree()
 {
     // TODO
     clear();
-
 }
 
 /**
@@ -625,6 +606,30 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
     return current;
 }
 
+template<class Key, class Value>
+Node<Key, Value>*
+BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current) 
+{
+  if (current->getRight() != nullptr) {
+      Node<Key, Value>* right = current->getRight();
+      while (right->getLeft() != nullptr) {
+        right = right->getLeft();
+      }
+      current = right;
+    }
+    else {
+      Node<Key, Value>* parent = current->getParent();
+      while (parent != NULL && parent->getLeft() != current) {
+        current = parent;
+        parent = current->getParent();
+      }
+      current = parent;
+      if (parent == NULL) current = NULL; //current is root
+    }
+    
+    return current;
+}
+
 
 /**
 * A method to remove all contents of the tree and
@@ -633,7 +638,6 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
-  
   postOrderClear(root_);
     // TODO
 }
